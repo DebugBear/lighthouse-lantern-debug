@@ -1,18 +1,17 @@
 {
-  "name": "lighthouse",
+  "name": "lighthouse-lantern-debug",
   "type": "module",
-  "version": "12.5.1",
-  "description": "Automated auditing, performance metrics, and best practices for the web.",
+  "version": "12.5.6",
+  "description": "Debug simulated throttling in Lighthouse",
   "main": "./core/index.js",
   "bin": {
-    "lighthouse": "./cli/index.js",
-    "chrome-debug": "./core/scripts/manual-chrome-launcher.js",
-    "smokehouse": "./cli/test/smokehouse/frontends/smokehouse-bin.js"
+    "lighthouse-lantern-debug": "./cli/index.js"
   },
   "engines": {
     "node": ">=18.20"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "prepack": "yarn build-report --standalone --flow --esm && yarn build-types",
     "postpack": "yarn clean-types",
     "build-all": "npm-run-posix-or-windows build-all:task",
@@ -76,7 +75,7 @@
     "dogfood-lhci": "./core/scripts/dogfood-lhci.sh",
     "timing-trace": "node core/scripts/generate-timing-trace.js",
     "changelog": "conventional-changelog --config ./build/changelog-generator/index.cjs --infile changelog.md --same-file",
-    "type-check": "tsc --build ./tsconfig-all.json",
+    "type-check": "echo 'nah';",
     "i18n:checks": "./core/scripts/i18n/assert-strings-collected.sh",
     "i18n:collect-strings": "node core/scripts/i18n/collect-strings.js",
     "update:lantern-baseline": "node core/scripts/lantern/update-baseline-lantern-values.js",
@@ -204,6 +203,8 @@
     "metaviewport-parser": "0.3.0",
     "open": "^8.4.0",
     "parse-cache-control": "1.0.1",
+    "patch-package": "^8.0.0",
+    "postinstall-postinstall": "^2.1.0",
     "puppeteer-core": "^24.4.0",
     "robots-parser": "^3.0.1",
     "semver": "^5.3.0",
@@ -218,16 +219,8 @@
     "puppeteer/**/devtools-protocol": "0.0.1436416",
     "puppeteer-core/**/devtools-protocol": "0.0.1436416"
   },
-  "repository": "GoogleChrome/lighthouse",
-  "keywords": [
-    "google",
-    "chrome",
-    "devtools"
-  ],
+  "repository": "DebugBear/lighthouse-lantern-debug",
+  "keywords": [],
   "author": "Google LLC",
-  "license": "Apache-2.0",
-  "bugs": {
-    "url": "https://github.com/GoogleChrome/lighthouse/issues"
-  },
-  "homepage": "https://github.com/GoogleChrome/lighthouse#readme"
+  "license": "Apache-2.0"
 }

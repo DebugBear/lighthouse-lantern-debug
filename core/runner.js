@@ -47,6 +47,7 @@ class Runner {
        * @type {Array<string | LH.IcuMessage>}
        */
       const lighthouseRunWarnings = [];
+      global["lantern-info"] = [];
 
       // Potentially quit early
       if (settings.gatherMode && !settings.auditMode) return;
@@ -136,6 +137,83 @@ class Runner {
       // Create the HTML, JSON, and/or CSV string
       const report = ReportGenerator.generateReport(lhr, settings.output);
 
+      const metricsAuditInfo = lhr.audits?.metrics?.details?.items?.[0];
+      
+      const fcp = global["lantern-info"].find(info=> info.metric === "FirstContentfulPaint");
+      const lcp = global["lantern-info"].find(info=> info.metric === "LargestContentfulPaint");
+      global["lantern-info"]=global["lantern-info"].filter(info => !["FirstContentfulPaint","LargestContentfulPaint"].includes(info.metric));
+      global["lantern-info"].push(lcp)
+      global["lantern-info"].push(fcp)
+
+      console.log(global["lantern-info"].filter(info => {
+        if (!info || !info.metric){
+          return
+        }
+        if (info.metric ==="MaxPotentialFID") {
+          return false
+        }
+        return true
+      }).map(info => {
+
+        const observedValue=metricsAuditInfo["observed"+info.metric]
+
+        return `\n### ${info.metric} - ${Math.round(info.timing)}ms
+
+Optimistic: ${Math.round(info.optimisticEstimate.timeInMs)}ms
+Pessimistic: ${Math.round(info.pessimisticEstimate.timeInMs)}ms${observedValue?`\nObserved: ${Math.round(observedValue)}ms`:""}
+
+${logNodes(info)}`
+      }).join("\n"));
+
+      console.log(" ")
+      
+      
+      
+
+      
+// console.log(lcp.optimisticEstimate.nodeTimings);
+      
+
+      // console.log("fcp.pessimisticEstimate.nodeTimings", fcp.pessimisticEstimate.nodeTimings);
+      // console.log("fcp.pessimisticEstimate.nodeTimings", Array.from(fcp.pessimisticEstimate.nodeTimings));
+
+      function logNodes(metricInfo){
+        const optimisticNodes = metricInfo.optimisticEstimate.nodeTimings;
+        const pessimisticNodes = metricInfo.pessimisticEstimate.nodeTimings;
+
+        const makeLines = (nodes) => {
+          return Array.from(nodes).map(([node, timings]) =>{
+            const name = ((node.request?.url ?? node?._event?.name) || "N/A").slice(0, 300);
+            let measuredTime = "";
+            let line = `${Math.round(timings.startTime)}ms - ${Math.round(timings.endTime)}: ${name} ${measuredTime ? " Measured: "+measuredTime:""}`;
+          
+            return line
+          });
+        }
+        
+        const optimisticLines = makeLines(optimisticNodes);
+        const pessimisticLines = makeLines(pessimisticNodes);
+
+        const outlines =[]
+
+        outlines.push("#### Pessimistic Node Timings")
+        pessimisticLines.forEach(line => {
+          // const pessimisticOnly  = !optimisticLines.includes(line)
+          outlines.push(line)
+        });
+
+        outlines.push(" ")
+
+        outlines.push("#### Optimistic Node Timings")
+        optimisticLines.forEach(line => {
+          // const optimisticOnly  = !pessimisticLines.includes(line)
+          outlines.push(line)
+        });
+        
+        return outlines.join("\n");
+      }
+
+      
       return {lhr, artifacts, report};
     } catch (err) {
       throw Runner.createRunnerError(err, settings);
