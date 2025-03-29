@@ -1,7 +1,7 @@
 {
   "name": "lighthouse-lantern-debug",
   "type": "module",
-  "version": "12.5.6",
+  "version": "12.5.7",
   "description": "Debug simulated throttling in Lighthouse",
   "main": "./core/index.js",
   "bin": {
