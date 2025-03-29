@@ -10,7 +10,9 @@ See details on the [Lighthouse throttling simulation](https://www.debugbear.com/
 
 ## How to use
 
-Use it just like Lighthouse:
+Install with `npm install -g lighthouse-lantern-debug`
+
+Then run it like Lighthouse:
 
 ```
 lighthouse-lantern-debug https://web.dev/
