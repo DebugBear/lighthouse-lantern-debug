@@ -6,6 +6,8 @@ See details on the [Lighthouse throttling simulation](https://www.debugbear.com/
 - Observed metric values
 - Node timings
 
+![CleanShot 2025-03-29 at 10 18 32](https://github.com/user-attachments/assets/1201754d-7baf-4f5b-97f0-d71afe1ce69e)
+
 ## How to use
 
 Use it just like Lighthouse:
